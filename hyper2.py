@@ -94,7 +94,7 @@ best = 0
 # trials = Trials()
 
 
-best,trials_inside = fmin(fn=f, space=param_space, algo=tpe.suggest, max_evals=2000, trials=trials,points_to_evaluate = limited_version_of8sample)
+best,trials_inside = fmin(fn=f, space=param_space, algo=tpe.suggest, max_evals=2000, trials=trials,points_to_evaluate = limited_version_of8sample,)
 # best,trials_inside = fmin(f, param_space, algo=tpe.suggest, max_evals=10, trials=trials)
 
 
