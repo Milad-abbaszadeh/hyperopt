@@ -5,7 +5,7 @@ import pandas as pd
 
 # List of dataset IDs used for the NIPS experiment.
 dataset_ids = [1049,1050,1053,1067,1068,1112,1114,1116,1120,1128,1130,1134,1138,1139,1142,1146,1161,1166,12,14,16,180,182,185,18,22,23,24,273,28,293,300,30,31,32,351,354,36,38,390,391,393,396,399,3,44,46,554,60,6,914,953]
-
+print(len(dataset_ids))
 
 def get_task_ids(dataset_ids):
     # return task ids of corresponding datset ids.
@@ -38,6 +38,7 @@ def get_task_ids(dataset_ids):
 
 def main():
     task_ids = sorted(get_task_ids(dataset_ids))
+    print(len(task_ids))
     string_to_print = ''
     for tid in task_ids:
         string_to_print += str(tid) + ' '
