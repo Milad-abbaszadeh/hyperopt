@@ -17,6 +17,9 @@ import pickle
 import time
 from sklearn import metrics
 from sklearn.metrics import roc_auc_score
+import datetime
+from datetime import timedelta
+
 
 
 
@@ -95,7 +98,9 @@ class run_hyperopt(object):
 
     def objective(self,params):
         print("--------------------")
-        start = time.time()
+        start = datetime.datetime.now()
+        self.time_tracker.append(start)
+
         print(params)
         copy_params = copy.deepcopy(params)
         step=[]
@@ -197,8 +202,7 @@ class run_hyperopt(object):
         else:
             self.rest_x_y()
 
-        end = time.time()
-        self.time_tracker.append(end-start)
+
         print(" \n Accuracy is {}".format(accuracy))
         # print("AUC is {}".format(full_auc))
         return {'loss': -accuracy, 'status': STATUS_OK}
@@ -210,10 +214,12 @@ class run_hyperopt(object):
 if __name__ == '__main__':
 
     runner = run_hyperopt(31,31)
-    trials = Trials()
-    best,trials_inside = fmin(runner.objective, runner.make_search_space(), algo=tpe.suggest, max_evals=100, trials=trials,rstate=np.random.RandomState(10))
+    # trials = Trials()
+    trials = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/results_onserver/ashkan_server/bigsearchspace/trial_bigsearchspace_5000.p", "rb"))
+
+    best,trials_inside = fmin(runner.objective, runner.make_search_space(), algo=tpe.suggest, max_evals=5100, trials=trials,rstate=np.random.RandomState(10))
     print("Best Accuracy is {}\n {} \n".format(trials_inside.best_trial['result']['loss'],best))
     print(space_eval(runner.make_search_space(),best))
-    pickle.dump(trials_inside, open('trial_bigsearchspace_100_dataset32.p', 'wb'))
-    # pickle.dump(runner.time_tracker, open('timetracker_bigsearchspace_1000_dataset32.p', 'wb'))
+    pickle.dump(trials_inside, open('trial_bigsearchspace_100_dataset31_5000initial.p', 'wb'))
+    pickle.dump(runner.time_tracker, open('timetracker_bigsearchspace_100_dataset31_5000initial.p', 'wb'))
 
