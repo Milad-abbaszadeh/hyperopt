@@ -19,7 +19,7 @@ from sklearn import metrics
 from sklearn.metrics import roc_auc_score
 import datetime
 from datetime import timedelta
-
+import temp
 
 
 
@@ -209,17 +209,27 @@ class run_hyperopt(object):
 
 
 
+import hyperopt.plotting
 
 
 if __name__ == '__main__':
 
     runner = run_hyperopt(31,31)
-    # trials = Trials()
-    trials = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/results_onserver/ashkan_server/bigsearchspace/trial_bigsearchspace_5000.p", "rb"))
+    trials = Trials()
+    trial_bigsearchspace_1000 = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/results_onserver/ashkan_server/bigsearchspace/trial_bigsearchspace_5000.p","rb"))
+    # trials = temp.find_n_initial(trial=trial_bigsearchspace_1000,N=1000,good=7,bad=993)
 
-    best,trials_inside = fmin(runner.objective, runner.make_search_space(), algo=tpe.suggest, max_evals=5100, trials=trials,rstate=np.random.RandomState(10))
+    # trials = trial_bigsearchspace_1000
+
+    # trials = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/results/madeup_trials/trial_1000_new_outof5000_1.p", "rb"))
+    # tpe._default_linear_forgetting = 1000
+    best,trials_inside = fmin(runner.objective, runner.make_search_space(), algo=tpe.suggest, max_evals=100, trials=trials,rstate=np.random.RandomState(10))
     print("Best Accuracy is {}\n {} \n".format(trials_inside.best_trial['result']['loss'],best))
     print(space_eval(runner.make_search_space(),best))
-    pickle.dump(trials_inside, open('./results/result_bigsearchspace/trial_bigsearchspace_100_dataset31_5000initial.p', 'wb'))
-    pickle.dump(runner.time_tracker, open('./results/result_bigsearchspace/timetracker_bigsearchspace_100_dataset31_5000initial.p', 'wb'))
+    temp.trial_utils(trials_inside,0,100)
+
+    # pickle.dump(trials_inside, open('./results/result_bigsearchspace/trial_bigsearchspace_100_dataset31_1000initial_new_1.p', 'wb'))
+    # pickle.dump(runner.time_tracker, open('./results/result_bigsearchspace/timetracker_bigsearchspace_100_dataset31_1000initial_new_1.p', 'wb'))
+
+    temp.time_tracker_plot(runner.time_tracker, 'time', 'iteration', 'time(sec)}', show_plot=False)
 

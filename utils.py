@@ -152,6 +152,6 @@ print(new_list_runs)
 
 
 
-
-import pickle
-pickle.dump( new_list_runs, open( "limited_version_of8sample.p", "wb"))
+#
+# import pickle
+# pickle.dump( new_list_runs, open( "limited_version_of8sample.p", "wb"))
