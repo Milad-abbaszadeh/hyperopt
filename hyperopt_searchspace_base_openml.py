@@ -380,7 +380,7 @@ if __name__ == '__main__':
 
     runner = run_hyperopt(31,31)
     # trials = Trials()
-    trials = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/trial_31.p", "rb"))
+    trials = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/31/trial_31.p", "rb"))
     print(len(trials.trials))
     print(trials.trials)
 
