@@ -1,4 +1,4 @@
-
+from __future__ import with_statement
 ###############################################
 import pickle
 import time
@@ -131,21 +131,27 @@ def trial_utils(trial, start, end):
     losses = trial.losses()
     losses = [abs(i) for i in losses]
     losses = np.array(losses)
+    fail_config_index = np.where(losses==0)[0]
+    number_failconfig = len(fail_config_index)
+    number_all_try = len(losses)
+
     best_indices = np.argwhere(losses == np.amin(losses))
     best_indices = best_indices.flatten().tolist()
+
+    losses = np.delete(losses,fail_config_index)
     avg_score = losses[start:end].mean()
 
     best_score_id = trial.best_trial['tid']
     best_score = abs(trial.best_trial['result']['loss'])
 
-    print('Best score:{} \n best score id:{} \n Average score[{},{}]:{}'.format(best_score, best_score_id, start, end,
-                                                                                avg_score))
-    print("all best scores idices {}".format(best_indices))
+    print('Best score:{} \n best score id:{} \n Average score[{},{}]:{} \n number of all try: {} \n number of fail try:{}'.format(best_score, best_score_id, start, end,
+                                                                                avg_score,number_all_try,number_failconfig))
+    # print("all best scores idices {}".format(best_indices))
     print("-----------")
 
 
 def time_tracker_plot(times, plot_label, xlabel, ylabel, show_plot=True):
-    print(times)
+    # print(times)
     time_keeper = []
     iteration = len(times) - 1
     for i in range(iteration):
@@ -158,13 +164,10 @@ def time_tracker_plot(times, plot_label, xlabel, ylabel, show_plot=True):
             elapsedTime = times[i + 1][1] - times[i][1]
             time_keeper.append(timedelta.total_seconds(elapsedTime))
 
-
-
-
     time_keeper.append(timedelta.total_seconds(elapsedTime))
-    print("total time is {}".format(np.array(time_keeper).sum()))
+    print("total time point finding is {}".format(np.array(time_keeper).sum()))
     print("mean time for each configuration finding {}".format(np.array(time_keeper).mean()))
-    print(time_keeper)
+    # print(time_keeper)
     if show_plot:
         fig_size = plt.rcParams["figure.figsize"]
         fig_size[0] = 20
@@ -175,3 +178,4 @@ def time_tracker_plot(times, plot_label, xlabel, ylabel, show_plot=True):
         plt.ylabel('{}'.format(ylabel))
         plt.legend(loc=3)
         plt.show()
+
