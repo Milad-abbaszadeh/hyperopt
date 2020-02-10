@@ -134,7 +134,6 @@ class run_hyperopt(object):
                  'gamma':hp.uniform('fkceigenpro__gamma', 1e-10,0.0001),
                  'kernel':hp.choice('fkceigenpro__kernel',["laplace", "rbf"]),
                  'n_components':hp.choice("fkceigenpro__n_components",range(500,5000))
-
                 },
 
                 {'type':'svc',
@@ -380,23 +379,23 @@ class run_hyperopt(object):
 
 if __name__ == '__main__':
 
-    runner = run_hyperopt(32,32)
-    # trials = Trials()
-    trials = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/32/trial_32.p", "rb"))
+    runner = run_hyperopt(dataset_id=3,task_id=3)
+    trials = Trials()
+    # all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/3/trial_3.p", "rb"))
 
-    # trials = temp.find_n_initial(trial=all_trials,N=2000,good=7,bad=1993)
+    # trials = temp.find_n_initial(trial=all_trials,N=2000,good=11,bad=1989)
     print(len(trials.trials))
-    print(trials.trials)
+    # print(trials.trials)
 
     #capture the time
     time_tracker.append(['0start',datetime.datetime.now()])
 
-    best,trials_inside = fmin(runner.objective, runner.make_search_space(), algo=tpe.suggest, max_evals=10210, trials=trials,rstate=np.random.RandomState(10))
+    best,trials_inside = fmin(runner.objective, runner.make_search_space(), algo=tpe.suggest, max_evals=100, trials=trials,rstate=np.random.RandomState(10))
     print("Best Accuracy is {}\n {} \n".format(trials_inside.best_trial['result']['loss'],best))
-    print(space_eval(runner.make_search_space(),best))
+    # print(space_eval(runner.make_search_space(),best))
 
-    temp.trial_utils(trials_inside,10203,10210)
+    temp.trial_utils(trials_inside,0,100)
     temp.time_tracker_plot(time_tracker, 'time', 'iteration', 'time(sec)}', show_plot=True)
 
-    # pickle.dump(trials_inside, open('./result_openml/mylaptop/32/100it_1000in_32.p', 'wb'))
-    # pickle.dump(time_tracker, open('./result_openml/mylaptop/32/100it_1000in_timetracker_32.p', 'wb'))
+    pickle.dump(trials_inside, open('./result_openml/mylaptop/3/100it_0in_3.p', 'wb'))
+    pickle.dump(time_tracker, open('./result_openml/mylaptop/3/100it_0in_timetracker_3.p','wb'))
