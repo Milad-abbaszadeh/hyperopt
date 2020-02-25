@@ -35,6 +35,7 @@ import signal
 from contextlib import contextmanager
 import threading
 import time
+import sys
 import timeout_decorator
 time_tracker=[]
 class run_hyperopt(object):
@@ -379,23 +380,36 @@ class run_hyperopt(object):
 
 if __name__ == '__main__':
 
-    runner = run_hyperopt(dataset_id=3,task_id=3)
-    trials = Trials()
-    # all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/3/trial_3.p", "rb"))
 
-    # trials = temp.find_n_initial(trial=all_trials,N=2000,good=11,bad=1989)
-    print(len(trials.trials))
-    # print(trials.trials)
+    for iteration in range(3):
 
-    #capture the time
-    time_tracker.append(['0start',datetime.datetime.now()])
+        runner = run_hyperopt(dataset_id=31,task_id=31)
 
-    best,trials_inside = fmin(runner.objective, runner.make_search_space(), algo=tpe.suggest, max_evals=100, trials=trials,rstate=np.random.RandomState(10))
-    print("Best Accuracy is {}\n {} \n".format(trials_inside.best_trial['result']['loss'],best))
-    # print(space_eval(runner.make_search_space(),best))
+        all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/31/trial_31.p", "rb"))
 
-    temp.trial_utils(trials_inside,0,100)
-    temp.time_tracker_plot(time_tracker, 'time', 'iteration', 'time(sec)}', show_plot=True)
 
-    pickle.dump(trials_inside, open('./result_openml/mylaptop/3/100it_0in_3.p', 'wb'))
-    pickle.dump(time_tracker, open('./result_openml/mylaptop/3/100it_0in_timetracker_3.p','wb'))
+        # trials = Trials()
+        # trials = temp.find_n_initial(trial=all_trials,N=6000,good=19,bad=5981)
+        trials = temp.find_n_initial_random(trial=all_trials,N=6000)
+        # trials =temp.find_n_histogram_points(trial =all_trials,full_budget=1000,n_bin = 100,plot=False)
+        print(len(trials.trials))
+
+
+        #capture the time
+        time_tracker.append(['0start',datetime.datetime.now()])
+
+        best,trials_inside = fmin(runner.objective, runner.make_search_space(), algo=tpe.suggest, max_evals=6100, trials=trials,rstate=np.random.RandomState(10))
+        print("Best Accuracy is {}\n {} \n".format(trials_inside.best_trial['result']['loss'],best))
+        # print(space_eval(runner.make_search_space(),best))
+
+        orig_stdout = sys.stdout
+        with open('/home/dfki/Desktop/Thesis/hyperopt/result_openml/mylaptop/31/automatic/100it_6000in_random_3_gamma1.p','a') as f:
+            sys.stdout = f
+            print("#################  iteration {} #####################".format(iteration))
+            temp.trial_utils(trials_inside,6000,6100)
+            temp.time_tracker_plot(time_tracker, 'time', 'iteration', 'time(sec)}', show_plot=True)
+
+
+        sys.stdout = orig_stdout
+        pickle.dump(trials_inside, open('./result_openml/mylaptop/31/100it_6000in_trial_random_31_gamma1_{}.p'.format(iteration), 'wb'))
+        pickle.dump(time_tracker, open('./result_openml/mylaptop/31/100it_6000in_timetracker_random_31_gamma1_{}.p'.format(iteration),'wb'))
