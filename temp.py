@@ -8,6 +8,9 @@ from hyperopt import fmin, tpe, hp, STATUS_OK,Trials,trials_from_docs
 import numpy as np
 import random
 from scipy import stats
+import pandas as pd
+from sklearn.cluster import KMeans
+
 # def objective(args):
 #     x= args
 #     print("X is {} and loss is {}".format(x,x[0] ** 2))
@@ -33,7 +36,7 @@ from scipy import stats
 #################################################################
 from datetime import timedelta
 from matplotlib import pyplot as plt
-
+import matplotlib
 def find_n_initial(trial, N, good, bad):
     """
     This method sort, first the bad points and then the good points and works better than the Vs the reverse one.
@@ -206,6 +209,8 @@ def time_tracker_plot(times, plot_label, xlabel, ylabel, show_plot=True):
     print("mean time for each configuration finding {}".format(np.array(time_keeper).mean()))
     # print(time_keeper)
     if show_plot:
+        matplotlib.rcParams.update({'font.size': 22})
+
         fig_size = plt.rcParams["figure.figsize"]
         fig_size[0] = 20
         fig_size[1] = 8
@@ -224,16 +229,31 @@ def find_n_histogram_points(trial, full_budget, n_bin, plot=False):
     losses = [abs(i) for i in losses]
     losses = np.array(losses)
     losses_index = np.argsort(losses)
+    #find index of more 0.5 accuracies
+    valuable_index=[]
+    valuable_points=[]
+    for index,value in enumerate(losses):
+        if value >= 0.5:
+            valuable_index.append(index)
+            valuable_points.append(value)
+
+    print(losses[6444])
     print("Size of the History is {}".format(len(losses)))
+    print("Size of atleast 50 accuracy is {}".format(len(valuable_index)))
+    print("we need to select {} for each bin".format(budget_per_bin))
     print("Best point accuracy is {}".format(losses[losses_index[-1]]))
 
     selected_index = []
 
     def select_points(binmember):
+        print(len(binmember))
 
         if len(binmember) == 0:
             return len(binmember)
-        elif len(binmember) <= budget_per_bin:
+        elif len(binmember) < budget_per_bin:
+            print("change bin size")
+            raise Exception
+        elif len(binmember) == budget_per_bin:
             for item in binmember:
                 index = np.where(losses == item)[0][0]
                 selected_index.append(index)
@@ -243,16 +263,17 @@ def find_n_histogram_points(trial, full_budget, n_bin, plot=False):
                 index1 = np.where(losses == item1)[0][0]
                 selected_index.append(index1)
 
+        print("selected number {}".format(len(selected_index)))
         return len(binmember)
 
-    out = stats.binned_statistic(losses, statistic=select_points, bins=n_bin, values=losses)
+    out = stats.binned_statistic(valuable_points, statistic=select_points, bins=n_bin, values=valuable_points)
 
     # if number of point is still not enough
-    if len(selected_index) < full_budget:
-        diff = full_budget - len(selected_index)
-        Bests = losses_index[-diff:]
-        selected_index = list(selected_index) + list(Bests)
-
+    # if len(selected_index) < full_budget:
+    #     diff = full_budget - len(selected_index)
+    #     Bests = losses_index[-diff:]
+    #     selected_index = list(selected_index) + list(Bests)
+    print("Number of Selected points is {}".format(len(selected_index)))
     if plot:
         plt.hist(losses, bins=n_bin)
         plt.xlabel('Accuracy')
@@ -279,6 +300,136 @@ def find_n_histogram_points(trial, full_budget, n_bin, plot=False):
                 trial_merged.trials[i]['misc']['idxs'][str(key)] = [i]
 
     return trial_merged
+
+
+def find_n_special_points(trial, N, strategy):
+    losses = trial.losses()
+    losses = [abs(i) for i in losses]
+    losses = np.array(losses)
+    losses_index = np.argsort(losses)
+    if strategy == 'BEST':
+        selected_points = losses_index[-N:]
+    elif strategy == 'WORST':
+        selected_points = losses_index[:N]
+    else:
+        print("the strategy is not in list [Best,WORST]")
+
+
+    new_trial = []
+    for i, v in enumerate(trial.trials):
+        if i in selected_points:
+            new_trial.append(v)
+
+    empty_trial = Trials()
+    trial_merged = trials_from_docs(list(empty_trial) + new_trial)
+
+    for i, v in enumerate(trial_merged.trials):
+
+        need_to_change = trial_merged.trials[i]['tid']
+
+        trial_merged.trials[i]['tid'] = i
+        trial_merged.trials[i]['misc']['tid'] = i
+        for key in v['misc']['idxs']:
+            if v['misc']['idxs'][str(key)] == [need_to_change]:
+                trial_merged.trials[i]['misc']['idxs'][str(key)] = [i]
+    return trial_merged
+
+
+def remove_zero_trial(trial):
+    losses = trial.losses()
+    losses = [abs(i) for i in losses]
+    losses = np.array(losses)
+    fail_config_index = np.where(losses == 0)[0]
+    number_failconfig = len(fail_config_index)
+    print('Number of fail_point is {}'.format(number_failconfig))
+
+
+    new_trial = []
+    for i, v in enumerate(trial.trials):
+        if i not in fail_config_index:
+            new_trial.append(v)
+
+    empty_trial = Trials()
+    trial_merged = trials_from_docs(list(empty_trial) + new_trial)
+
+    for i, v in enumerate(trial_merged.trials):
+
+        need_to_change = trial_merged.trials[i]['tid']
+
+        trial_merged.trials[i]['tid'] = i
+        trial_merged.trials[i]['misc']['tid'] = i
+        for key in v['misc']['idxs']:
+            if v['misc']['idxs'][str(key)] == [need_to_change]:
+                trial_merged.trials[i]['misc']['idxs'][str(key)] = [i]
+    return trial_merged
+
+
+def vector_builder(trial):
+    trials_vector = []
+
+    for index, each_trial in enumerate(trial.trials):
+        vector = []
+        for i, x in enumerate(each_trial['misc']['vals']):
+
+            if len(each_trial['misc']['vals'][x]) == 0:
+                vector.append(0)
+            else:
+                vector.append(each_trial['misc']['vals'][x][0])
+
+        trials_vector.append(vector)
+
+    print('len vector is {}'.format(len(trials_vector)))
+    return trials_vector
+
+
+
+def sepecialindex_trial_builder(trial,selected_index):
+    # build the new trial
+    new_trial = []
+    for i in selected_index:
+        new_trial.append(trial.trials[i])
+
+    empty_trial = Trials()
+    trial_merged = trials_from_docs(list(empty_trial) + new_trial)
+
+    for i, v in enumerate(trial_merged.trials):
+
+        need_to_change = trial_merged.trials[i]['tid']
+
+        trial_merged.trials[i]['tid'] = i
+        trial_merged.trials[i]['misc']['tid'] = i
+        for key in v['misc']['idxs']:
+            if v['misc']['idxs'][str(key)] == [need_to_change]:
+                trial_merged.trials[i]['misc']['idxs'][str(key)] = [i]
+
+    return trial_merged
+
+
+def selecet_index_base_kmeans(X, k, min_member):
+    '''
+    X: np.array
+    k: number of k in kmeans
+    min_member: number of sample should take out of each cluster
+    '''
+    kmeans = KMeans(n_clusters=k, random_state=0).fit(X)
+
+    cluster_map = pd.DataFrame()
+    cluster_map['data_index'] = range(0, X.shape[0])
+    cluster_map['cluster'] = kmeans.labels_
+
+    selected_index = []
+    for i in range(k):
+        l = cluster_map[cluster_map.cluster == i].index
+        if len(l) <= min_member:
+            selected_index = list(l) + list(selected_index)
+        else:
+            sampling = random.choices(l, k=min_member)
+            selected_index = list(selected_index) + list(sampling)
+        l = []
+
+    return selected_index
+
+
 
 
 
