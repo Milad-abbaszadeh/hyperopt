@@ -37,6 +37,12 @@ import threading
 import time
 import sys
 import timeout_decorator
+import vector
+
+
+
+
+
 time_tracker=[]
 class run_hyperopt(object):
     def __init__(self,dataset_id,task_id):
@@ -380,49 +386,56 @@ class run_hyperopt(object):
 
 if __name__ == '__main__':
 
+    experiment_history=[]
 
-    for iteration in range(5):
+    # for iteration in list(np.arange(500,6500,500)):
+    for iteration in [1073]:
 
         runner = run_hyperopt(dataset_id=3,task_id=3)
 
         #all history which is available
-        # all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/mylaptop/3/automatic/new/trial3_basekmeans_k=3_hyperopt.p", "rb"))
+        all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/mylaptop/3/automatic/new/trials/trial1073_kmeans30_3.p", "rb"))
+
         # all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/3/trial_3.p", "rb"))
-        all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/mylaptop/3/dima/3/10000it_0in_3.p", "rb"))
-        all_trials = temp.remove_zero_trial(all_trials)
+        # all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/mylaptop/3/dima/3/10000it_0in_3.p", "rb"))
+        # all_trials = temp.remove_zero_trial(all_trials)
+        print(len(all_trials.trials))
 
         #selection strategies
-        # trials = all_trials
+        trials = all_trials
         # trials = Trials()
+        # trials = vector.trial_builder_kmeans(all_trials,num_clusters=iteration)
         # trials = temp.find_n_initial(trial=all_trials,N=8000,good=22,bad=7978)
-        trials = temp.find_n_initial_random(trial=all_trials,N=240)
+        # trials = temp.find_n_initial_random(trial=all_trials,N=240)
         # trials =temp.find_n_histogram_points(trial =all_trials,full_budget=650,n_bin = 10,plot=False)
         # trials = temp.find_n_special_points(all_trials,N=2000,strategy='WORST')
 
 
         #print Number of History
+        trial_size = len(trials.trials)
         print(len(trials.trials))
 
         #quality of given History
-        history_quality = np.array(trials.losses()).mean()
+        history_quality = abs(np.array(trials.losses()).mean())
 
         #capture the time
         time_tracker.append(['0start',datetime.datetime.now()])
 
-        best,trials_inside = fmin(runner.objective, runner.make_search_space(), algo=tpe.suggest, max_evals=340, trials=trials,rstate=np.random.RandomState(10))
+        best,trials_inside = fmin(runner.objective, runner.make_search_space(), algo=tpe.suggest, max_evals=100+trial_size, trials=trials,rstate=np.random.RandomState(10))
         print("Best Accuracy is {}\n {} \n".format(trials_inside.best_trial['result']['loss'],best))
 
 
         orig_stdout = sys.stdout
-        with open('/home/dfki/Desktop/Thesis/hyperopt/result_openml/mylaptop/3/automatic/new/100it_240in_random_3.p','a') as f:
+        with open('/home/dfki/Desktop/Thesis/hyperopt/result_openml/mylaptop/3/automatic/new/cluster/kmeansk=30_1073in.txt','a') as f:
             sys.stdout = f
             print("#################  iteration {} #####################".format(iteration))
-            temp.trial_utils(trials_inside,240,340)
+            avg_score,standard_deviation,max_start_end = temp.trial_utils(trials_inside,trial_size,100+trial_size)
             temp.time_tracker_plot(time_tracker, 'time', 'iteration', 'time(sec)}', show_plot=True)
             print( "History quality was {}".format(history_quality))
 
-
         sys.stdout = orig_stdout
+        experiment_history.append([iteration,avg_score,standard_deviation,max_start_end,history_quality])
 
+    # pickle.dump(experiment_history,open('./result_openml/mylaptop/3/automatic/new/cluster/experiment_history3.p','wb'))
         # pickle.dump(trials_inside, open('./result_openml/mylaptop/3/100it_0in_trial_gamma1_3_{}.p'.format(iteration), 'wb'))
         # pickle.dump(time_tracker, open('./result_openml/mylaptop/3/100it_0in_timetracker_gamma1_3_{}.p'.format(iteration),'wb'))

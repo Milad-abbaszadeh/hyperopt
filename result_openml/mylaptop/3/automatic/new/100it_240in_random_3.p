@@ -42,3 +42,14 @@ Best score in [240,340]:0.9727742946708465
 total time point finding is 626.6687459999999
 mean time for each configuration finding 1.5511602623762375
 History quality was -0.9165792719762277
+#################  iteration 4 #####################
+Best score:0.9971835815047022 
+ best score id:135 
+ Average score[240,340]:0.7912575776784068 
+ number of all try: 340 
+ number of fail try:66
+Best score in [240,340]:0.9727762539184953
+-----------
+total time point finding is 778.8437710000001
+mean time for each configuration finding 1.542264893069307
+History quality was -0.9277833766000522

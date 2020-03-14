@@ -179,15 +179,17 @@ def trial_utils(trial, start, end):
 
     losses = np.delete(losses,fail_config_index)
     avg_score = losses[start:end].mean()
+    standard_deviation = losses[start:end].std()
     max_start_end = losses[start:end].max()
 
     best_score_id = trial.best_trial['tid']
     best_score = abs(trial.best_trial['result']['loss'])
-
+    print('STD: {}'.format(standard_deviation))
     print('Best score:{} \n best score id:{} \n Average score[{},{}]:{} \n number of all try: {} \n number of fail try:{}'.format(best_score, best_score_id, start, end,
                                                                                 avg_score,number_all_try,number_failconfig))
     print("Best score in [{},{}]:{}".format(start,end,max_start_end))
     print("-----------")
+    return avg_score,standard_deviation,max_start_end
 
 
 def time_tracker_plot(times, plot_label, xlabel, ylabel, show_plot=True):
@@ -237,7 +239,7 @@ def find_n_histogram_points(trial, full_budget, n_bin, plot=False):
             valuable_index.append(index)
             valuable_points.append(value)
 
-    print(losses[6444])
+
     print("Size of the History is {}".format(len(losses)))
     print("Size of atleast 50 accuracy is {}".format(len(valuable_index)))
     print("we need to select {} for each bin".format(budget_per_bin))
@@ -339,7 +341,7 @@ def remove_zero_trial(trial):
     losses = trial.losses()
     losses = [abs(i) for i in losses]
     losses = np.array(losses)
-    fail_config_index = np.where(losses == 0)[0]
+    fail_config_index = np.where(losses <=0.5)[0] # 0.47778473091364204
     number_failconfig = len(fail_config_index)
     print('Number of fail_point is {}'.format(number_failconfig))
 
@@ -365,25 +367,32 @@ def remove_zero_trial(trial):
 
 
 def vector_builder(trial):
-    trials_vector = []
+
+
+    features = trial.trials[0]['misc']['vals'].keys()
+    d={}
+    # d['acc'] = []
+    for ii in features:
+        d[ii] =[]
+
 
     for index, each_trial in enumerate(trial.trials):
-        vector = []
+        # d['acc'].append(abs(each_trial['result']['loss']))
         for i, x in enumerate(each_trial['misc']['vals']):
 
             if len(each_trial['misc']['vals'][x]) == 0:
-                vector.append(0)
+                d[x].append(0.0)
             else:
-                vector.append(each_trial['misc']['vals'][x][0])
+                d[x].append(each_trial['misc']['vals'][x][0])
 
-        trials_vector.append(vector)
+    dd = pd.DataFrame.from_dict(d)
+    vector = dd.values
+    print('shape vector is {}'.format(vector.shape))
+    return vector
 
-    print('len vector is {}'.format(len(trials_vector)))
-    return trials_vector
 
 
-
-def sepecialindex_trial_builder(trial,selected_index):
+def specialindex_trial_builder(trial,selected_index):
     # build the new trial
     new_trial = []
     for i in selected_index:
@@ -448,3 +457,13 @@ def ploter(x,y, plot_label, xlabel, ylabel):
     plt.legend(loc=3)
     plt.show()
 
+#
+# import pickle
+# trial_3 = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/3/trial_3.p", "rb"))
+# # trial_1035in_histogram5bin = find_n_histogram_points(trial_3, 1035, 5, plot=True)
+#
+# # good_trial = find_n_initial(trial=trial_3,N=4000,good=15,bad=3987)
+# a= vector_builder(trial_3)
+# print(a.shape)
+# #save the result
+# # pickle.dump(trial_1035in_histogram5bin, open('/home/dfki/Desktop/Thesis/hyperopt/result_openml/mylaptop/3/automatic/new/cluster/trial_1035in_histogram5bin.p', 'wb'))

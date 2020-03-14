@@ -1,0 +1,12 @@
+#################  iteration 1035 #####################
+STD: 0.1012386959326406
+Best score:0.9974968710888611 
+ best score id:1010 
+ Average score[1035,1135]:0.8988922792284125 
+ number of all try: 1135 
+ number of fail try:12
+Best score in [1035,1135]:0.9646394984326019
+-----------
+total time point finding is 148.51005600000002
+mean time for each configuration finding 1.4703965940594061
+History quality was 0.760056048321271
