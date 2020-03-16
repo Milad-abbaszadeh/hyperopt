@@ -3,14 +3,14 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import pairwise_distances_argmin_min
 import temp
 import pickle
+from sklearn.preprocessing import StandardScaler
+
+
 def trial_builder_kmeans(all_trials,num_clusters):
     X = temp.vector_builder(all_trials)
+    X = StandardScaler().fit_transform(X)
 
-    # XX = []
-    # for row in X:
-    #     row = [float(xx) for xx in row]
-    #     XX.append(row)
-    # X = np.array(XX)
+
     selected_index = kmeans_point_selector(X,num_clusters)
     trial = temp.specialindex_trial_builder(all_trials,selected_index)
     print(len(trial.trials))

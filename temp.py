@@ -377,16 +377,27 @@ def vector_builder(trial):
 
 
     for index, each_trial in enumerate(trial.trials):
+        if index == 22105:
+            break
         # d['acc'].append(abs(each_trial['result']['loss']))
         for i, x in enumerate(each_trial['misc']['vals']):
 
             if len(each_trial['misc']['vals'][x]) == 0:
-                d[x].append(0.0)
+                # d[x].append(0.0)
+                d[x].append(np.nan)
             else:
-                d[x].append(each_trial['misc']['vals'][x][0])
+                if str(each_trial['misc']['vals'][x][0]) in ['None',np.nan]:
+                    d[x].append(np.nan)
+                else:
+                    d[x].append(float(each_trial['misc']['vals'][x][0]))
 
-    dd = pd.DataFrame.from_dict(d)
-    vector = dd.values
+    df = pd.DataFrame.from_dict(d)
+    #fill the None value with the mean of the column
+
+    df = df.fillna(df.mean())
+    df1 = df.dropna(axis='columns', how='all')
+
+    vector = df1.values
     print('shape vector is {}'.format(vector.shape))
     return vector
 
@@ -459,7 +470,7 @@ def ploter(x,y, plot_label, xlabel, ylabel):
 
 #
 # import pickle
-# trial_3 = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/3/trial_3.p", "rb"))
+# trial_3 = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/3/trial_3_new.p", "rb"))
 # # trial_1035in_histogram5bin = find_n_histogram_points(trial_3, 1035, 5, plot=True)
 #
 # # good_trial = find_n_initial(trial=trial_3,N=4000,good=15,bad=3987)
