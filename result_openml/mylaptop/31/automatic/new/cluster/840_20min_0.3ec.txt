@@ -1,0 +1,12 @@
+#################  iteration 840 #####################
+STD: 0.03644016877019097
+Best score:0.7759999999999999 
+ best score id:776 
+ Average score[840,940]:0.7377900000000001 
+ number of all try: 940 
+ number of fail try:0
+Best score in [840,940]:0.775
+-----------
+total time point finding is 145.01364699999996
+mean time for each configuration finding 1.4357786831683164
+History quality was 0.7236678571428572

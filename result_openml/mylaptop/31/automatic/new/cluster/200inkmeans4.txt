@@ -1,0 +1,12 @@
+#################  iteration 200 #####################
+STD: 0.032673624453596166
+Best score:0.7809999999999999 
+ best score id:152 
+ Average score[200,300]:0.6742061855670104 
+ number of all try: 300 
+ number of fail try:3
+Best score in [200,300]:0.7690000000000001
+-----------
+total time point finding is 131.40564900000004
+mean time for each configuration finding 1.3010460297029707
+History quality was 0.7412650000000001

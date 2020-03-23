@@ -3,7 +3,7 @@
 import pickle
 import time
 from audioop import reverse
-
+from sklearn.metrics.pairwise import euclidean_distances
 from hyperopt import fmin, tpe, hp, STATUS_OK,Trials,trials_from_docs
 import numpy as np
 import random
@@ -377,27 +377,26 @@ def vector_builder(trial):
 
 
     for index, each_trial in enumerate(trial.trials):
-        if index == 22105:
-            break
         # d['acc'].append(abs(each_trial['result']['loss']))
         for i, x in enumerate(each_trial['misc']['vals']):
 
             if len(each_trial['misc']['vals'][x]) == 0:
-                # d[x].append(0.0)
-                d[x].append(np.nan)
+                d[x].append(0.0)
+                # d[x].append(np.nan)
             else:
                 if str(each_trial['misc']['vals'][x][0]) in ['None',np.nan]:
-                    d[x].append(np.nan)
+                    # d[x].append(np.nan)
+                    d[x].append(0.0)
                 else:
                     d[x].append(float(each_trial['misc']['vals'][x][0]))
 
     df = pd.DataFrame.from_dict(d)
     #fill the None value with the mean of the column
 
-    df = df.fillna(df.mean())
-    df1 = df.dropna(axis='columns', how='all')
+    # df = df.fillna(df.mean())
+    # df1 = df.dropna(axis='columns', how='all')
 
-    vector = df1.values
+    vector = df.values
     print('shape vector is {}'.format(vector.shape))
     return vector
 
@@ -436,6 +435,7 @@ def selecet_index_base_kmeans(X, k, min_member):
     cluster_map = pd.DataFrame()
     cluster_map['data_index'] = range(0, X.shape[0])
     cluster_map['cluster'] = kmeans.labels_
+    centers = np.array(kmeans.cluster_centers_)
 
     selected_index = []
     for i in range(k):
@@ -443,18 +443,151 @@ def selecet_index_base_kmeans(X, k, min_member):
         if len(l) <= min_member:
             selected_index = list(l) + list(selected_index)
         else:
-            sampling = random.choices(l, k=min_member)
-            selected_index = list(selected_index) + list(sampling)
+            ceneter_i = centers[i]
+            dis_list = []
+            for index in l:
+                dis = euclidean_distances([ceneter_i], [X[index]])
+                dis_list.append(dis[0][0])
+            dis_list = np.array(dis_list)
+            k_closest_to_center = np.argpartition(dis_list, min_member)[:min_member]
+
+            selected_index = list(selected_index) + list(k_closest_to_center)
         l = []
 
     return selected_index
 
 
+def histogram_equal_percentage_base(trial, percentage, n_bin, plot=True):
+    losses = trial.losses()
+    losses = [abs(i) for i in losses]
+    losses = np.array(losses)
+    losses_index = np.argsort(losses)
+
+    selected_index = []
+
+    def select_points(binmember):
+        if len(binmember) == 0:
+            return len(binmember)
+
+        binmember = np.array(binmember)
+        required_number = int((percentage / 100) * len(binmember))
+
+        list_diff = []
+        for i, x in enumerate(binmember):
+            list_diff.append(abs(binmember[i] - binmember.mean()))
+
+        list_diff = np.array(list_diff)
+        indexes = np.argpartition(list_diff, required_number)[:required_number]
+        print("{} selected from this bin".format(len(indexes)))
+
+        for xx in indexes:
+            selected_index.append(xx)
+        return len(binmember)
+
+    out = stats.binned_statistic(losses, statistic=select_points, bins=n_bin, values=losses)
+
+    print("Number of Selected points is {}".format(len(selected_index)))
+    if plot:
+        plt.hist(losses, bins=n_bin)
+        plt.xlabel('Accuracy')
+        plt.ylabel('N - points')
+        plt.grid(True)
+        plt.show()
+
+    # build the new trial
+    new_trial = []
+    for i in selected_index:
+        new_trial.append(trial.trials[i])
+
+    empty_trial = Trials()
+    trial_merged = trials_from_docs(list(empty_trial) + new_trial)
+
+    for i, v in enumerate(trial_merged.trials):
+
+        need_to_change = trial_merged.trials[i]['tid']
+
+        trial_merged.trials[i]['tid'] = i
+        trial_merged.trials[i]['misc']['tid'] = i
+        for key in v['misc']['idxs']:
+            if v['misc']['idxs'][str(key)] == [need_to_change]:
+                trial_merged.trials[i]['misc']['idxs'][str(key)] = [i]
+
+    return trial_merged
+
+
+def histogram_equal_percentage_base_f1(trial, percentage, n_bin, plot=True):
+    losses = []
+    for t in trial.trials:
+        losses.append(t['result']['f_measure'])
+
+    losses = np.array(losses)
+    losses_index = np.argsort(losses)
+
+    selected_index = []
+
+    def select_points(binmember):
+        if len(binmember) == 0:
+            return len(binmember)
+
+        binmember = np.array(binmember)
+        required_number = int((percentage / 100) * len(binmember))
+
+        list_diff = []
+        for i, x in enumerate(binmember):
+            list_diff.append(abs(binmember[i] - binmember.mean()))
+
+        list_diff = np.array(list_diff)
+        indexes = np.argpartition(list_diff, required_number)[:required_number]
+        print("{} selected from this bin".format(len(indexes)))
+
+        for xx in indexes:
+            selected_index.append(xx)
+        return len(binmember)
+
+    out = stats.binned_statistic(losses, statistic=select_points, bins=n_bin, values=losses)
+
+    print("Number of Selected points is {}".format(len(selected_index)))
+    if plot:
+        plt.hist(losses, bins=n_bin)
+        plt.xlabel('Accuracy')
+        plt.ylabel('N - points')
+        plt.grid(True)
+        plt.show()
+
+    # build the new trial
+    new_trial = []
+    for i in selected_index:
+        new_trial.append(trial.trials[i])
+
+    empty_trial = Trials()
+    trial_merged = trials_from_docs(list(empty_trial) + new_trial)
+
+    for i, v in enumerate(trial_merged.trials):
+
+        need_to_change = trial_merged.trials[i]['tid']
+
+        trial_merged.trials[i]['tid'] = i
+        trial_merged.trials[i]['misc']['tid'] = i
+        for key in v['misc']['idxs']:
+            if v['misc']['idxs'][str(key)] == [need_to_change]:
+                trial_merged.trials[i]['misc']['idxs'][str(key)] = [i]
+
+    return trial_merged
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+import seaborn as sns
 def ploter(x,y, plot_label, xlabel, ylabel):
     fig_size = plt.rcParams["figure.figsize"]
     fig_size[0] = 20
@@ -468,13 +601,85 @@ def ploter(x,y, plot_label, xlabel, ylabel):
     plt.legend(loc=3)
     plt.show()
 
+
+def expriment_ploter(experiment, title):
+    fig_size = plt.rcParams["figure.figsize"]
+    fig_size[0] = 20
+    fig_size[1] = 8
+    x_axis_kmeans = []
+    avg_acc_3_kmeans = []
+    std_3 = []
+    max_found_3 = []
+    history_quality = []
+    for item in experiment:
+        x_axis_kmeans.append(item[0])
+        avg_acc_3_kmeans.append(item[1])
+        std_3.append(item[2])
+        max_found_3.append(item[3])
+        history_quality.append(item[4])
+
+    d3kmeasn = {
+        'History': x_axis_kmeans,
+        'AVG-Accuracy': avg_acc_3_kmeans,
+        #     'std':std_3,
+        'Best_found': max_found_3,
+        'History_quality': history_quality
+    }
+
+    pd3kmeasn = pd.DataFrame(d3kmeasn)
+
+    sns.set(font_scale=1.4, style='whitegrid', )
+    sns.set_context("talk", font_scale=1.4, rc={"lines.linewidth": 5, 'lines.markersize': 20})
+
+    sns.lineplot(x='History', y='AVG-Accuracy', style='Approaches', markers=True, dashes=False, hue='Approaches',
+                 data=pd.melt(pd3kmeasn, ['History'], value_name='AVG-Accuracy', var_name='Approaches')).set_title(
+        '{}'.format(title))
+    plt.legend(bbox_to_anchor=(1.03, 1), loc=2, borderaxespad=0.)
+
+
+def experiment_STD(experiment):
+    fig_size = plt.rcParams["figure.figsize"]
+    fig_size[0] = 20
+    fig_size[1] = 8
+    x_axis_kmeans = []
+    avg_acc_3_kmeans = []
+    std_3 = []
+    max_found_3 = []
+    history_quality = []
+    for item in experiment:
+        x_axis_kmeans.append(item[0])
+        avg_acc_3_kmeans.append(item[1])
+        std_3.append(item[2])
+        max_found_3.append(item[3])
+        history_quality.append(item[4])
+
+    d3kmeasn = {
+        'History': x_axis_kmeans,
+        'AVG-Accuracy': avg_acc_3_kmeans,
+        'std': std_3,
+        #         'Best_found':max_found_3,
+        #         'History_quality':history_quality
+    }
+
+    pd3kmeasn = pd.DataFrame(d3kmeasn)
+
+    g = sns.FacetGrid(pd3kmeasn, height=5, aspect=3)
+
+    ax = g.map(plt.errorbar, "History", "AVG-Accuracy", "std")
+
+    ax.set(xlabel="History", ylabel="Avg-acc")
+
+
+
 #
 # import pickle
-# trial_3 = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/3/trial_3_new.p", "rb"))
+# trial_3 = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/mylaptop/3/automatic/new/cluster/X_3.p", "rb"))
 # # trial_1035in_histogram5bin = find_n_histogram_points(trial_3, 1035, 5, plot=True)
 #
 # # good_trial = find_n_initial(trial=trial_3,N=4000,good=15,bad=3987)
-# a= vector_builder(trial_3)
+# # a= vector_builder(trial_3)
+# import vector
+# a=selecet_index_base_kmeans(trial_3,5,500)
 # print(a.shape)
-# #save the result
-# # pickle.dump(trial_1035in_histogram5bin, open('/home/dfki/Desktop/Thesis/hyperopt/result_openml/mylaptop/3/automatic/new/cluster/trial_1035in_histogram5bin.p', 'wb'))
+# # #save the result
+# # # pickle.dump(trial_1035in_histogram5bin, open('/home/dfki/Desktop/Thesis/hyperopt/result_openml/mylaptop/3/automatic/new/cluster/trial_1035in_histogram5bin.p', 'wb'))

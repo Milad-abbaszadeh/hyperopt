@@ -8,7 +8,7 @@ from sklearn.preprocessing import StandardScaler
 
 def trial_builder_kmeans(all_trials,num_clusters):
     X = temp.vector_builder(all_trials)
-    X = StandardScaler().fit_transform(X)
+    # X = StandardScaler().fit_transform(X)
 
 
     selected_index = kmeans_point_selector(X,num_clusters)
@@ -51,5 +51,5 @@ def kmeans_point_selector(tf_matrix,num_clusters):
 
 # import pickle
 # trial_3 = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/3/trial_3.p", "rb"))
-# # a = trial_builder_kmeans(trial_3,num_clusters=8000)
+# a=trial_builder_kmeans(trial_3,5)
 # print(len(a.trials))

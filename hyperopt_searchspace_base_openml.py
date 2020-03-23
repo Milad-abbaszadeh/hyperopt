@@ -388,25 +388,27 @@ if __name__ == '__main__':
 
     experiment_history=[]
 
-    for iteration in list(np.arange(500,6500,500)):
-    # for iteration in [4000]:
+    # for iteration in list(np.arange(10,100,10)):
+    for iteration in [640]:
 
-        runner = run_hyperopt(dataset_id=3,task_id=3)
+        runner = run_hyperopt(dataset_id=31,task_id=31)
 
         #all history which is available
-        # all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/mylaptop/3/automatic/new/trials/4000in_new.p", "rb"))
+        all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/mylaptop/31/automatic/new/cluster/640_in_kmeans10_6feature.p", "rb"))
 
-        all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/3/trial_3_new.p", "rb"))
+        # all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/31/trial_31_withrunid1.p", "rb"))
         # all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/mylaptop/3/dima/3/10000it_0in_3.p", "rb"))
         # all_trials = temp.remove_zero_trial(all_trials)
-        print(len(all_trials.trials))
+        # print(len(all_trials.trials))
 
         #selection strategies
-        # trials = all_trials
+        trials = all_trials
         # trials = Trials()
-        trials = vector.trial_builder_kmeans(all_trials,num_clusters=iteration)
+        # trials = temp.histogram_equal_percentage_base_f1(trial=all_trials, percentage=iteration, n_bin=10, plot=False)
+        # trials = temp.histogram_equal_percentage_base(trial=all_trials,percentage=iteration,n_bin=5,plot=False)
+        # trials = vector.trial_builder_kmeans(all_trials,num_clusters=iteration)
         # trials = temp.find_n_initial(trial=all_trials,N=8000,good=22,bad=7978)
-        # trials = temp.find_n_initial_random(trial=all_trials,N=240)
+        # trials = temp.find_n_initial_random(trial=all_trials,N=200)
         # trials =temp.find_n_histogram_points(trial =all_trials,full_budget=650,n_bin = 10,plot=False)
         # trials = temp.find_n_special_points(all_trials,N=2000,strategy='WORST')
 
@@ -426,7 +428,7 @@ if __name__ == '__main__':
 
 
         orig_stdout = sys.stdout
-        with open('/home/dfki/Desktop/Thesis/hyperopt/result_openml/mylaptop/3/automatic/new/cluster/kmeans_diiferentk_imputation.txt','a') as f:
+        with open('/home/dfki/Desktop/Thesis/hyperopt/result_openml/mylaptop/31/automatic/new/cluster/640_in_kmeans10_6feature.txt','a') as f:
             sys.stdout = f
             print("#################  iteration {} #####################".format(iteration))
             avg_score,standard_deviation,max_start_end = temp.trial_utils(trials_inside,trial_size,100+trial_size)
@@ -436,6 +438,6 @@ if __name__ == '__main__':
         sys.stdout = orig_stdout
         experiment_history.append([iteration,avg_score,standard_deviation,max_start_end,history_quality])
 
-    # pickle.dump(experiment_history,open('./result_openml/mylaptop/3/automatic/new/cluster/experiment_history3.p','wb'))
+    # pickle.dump(experiment_history,open('./result_openml/mylaptop/31/automatic/new/cluster/his_equalP_f1_10bin_full.p','wb'))
         # pickle.dump(trials_inside, open('./result_openml/mylaptop/3/100it_0in_trial_gamma1_3_{}.p'.format(iteration), 'wb'))
         # pickle.dump(time_tracker, open('./result_openml/mylaptop/3/100it_0in_timetracker_gamma1_3_{}.p'.format(iteration),'wb'))
