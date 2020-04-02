@@ -1,0 +1,120 @@
+#################  iteration 10 #####################
+STD: 0.023926629516085207
+Best score:0.78 
+ best score id:242 
+ Average score[662,762]:0.6745800000000002 
+ number of all try: 762 
+ number of fail try:0
+Best score in [662,762]:0.7700000000000001
+-----------
+total time point finding is 190.73236000000003
+mean time for each configuration finding 1.8884392079207923
+History quality was 0.7214018126888218
+#################  iteration 20 #####################
+STD: 0.05283379978763594
+Best score:0.78 
+ best score id:427 
+ Average score[1326,1426]:0.6963600000000001 
+ number of all try: 1426 
+ number of fail try:0
+Best score in [1326,1426]:0.772
+-----------
+total time point finding is 362.862079
+mean time for each configuration finding 1.7963469257425742
+History quality was 0.7195723981900453
+#################  iteration 30 #####################
+STD: 0.06316804492779558
+Best score:0.78 
+ best score id:584 
+ Average score[1990,2090]:0.6815899999999999 
+ number of all try: 2090 
+ number of fail try:0
+Best score in [1990,2090]:0.767
+-----------
+total time point finding is 559.867339
+mean time for each configuration finding 1.84774699339934
+History quality was 0.7199984924623116
+#################  iteration 40 #####################
+STD: 0.05038700229225787
+Best score:0.78 
+ best score id:1025 
+ Average score[2655,2755]:0.6985000000000001 
+ number of all try: 2755 
+ number of fail try:0
+Best score in [2655,2755]:0.772
+-----------
+total time point finding is 755.384164
+mean time for each configuration finding 1.869762782178218
+History quality was 0.7185058380414313
+#################  iteration 50 #####################
+STD: 0.04048928129764716
+Best score:0.7809999999999999 
+ best score id:1537 
+ Average score[3320,3420]:0.69709 
+ number of all try: 3420 
+ number of fail try:0
+Best score in [3320,3420]:0.766
+-----------
+total time point finding is 991.462254
+mean time for each configuration finding 1.963291592079208
+History quality was 0.7164123493975904
+#################  iteration 60 #####################
+STD: 0.05391828910490391
+Best score:0.7809999999999999 
+ best score id:1567 
+ Average score[3982,4082]:0.69441 
+ number of all try: 4082 
+ number of fail try:0
+Best score in [3982,4082]:0.771
+-----------
+total time point finding is 1244.739293
+mean time for each configuration finding 2.0540252359735973
+History quality was 0.71959467604219
+#################  iteration 70 #####################
+STD: 0.045433802394252674
+Best score:0.7809999999999999 
+ best score id:1514 
+ Average score[4646,4746]:0.6973599999999999 
+ number of all try: 4746 
+ number of fail try:0
+Best score in [4646,4746]:0.7710000000000001
+-----------
+total time point finding is 1472.077498
+mean time for each configuration finding 2.0821463903818955
+History quality was 0.7195878174773999
+#################  iteration 80 #####################
+STD: 0.04816743609535389
+Best score:0.7809999999999999 
+ best score id:1553 
+ Average score[5311,5411]:0.69691 
+ number of all try: 5411 
+ number of fail try:0
+Best score in [5311,5411]:0.7690000000000001
+-----------
+total time point finding is 1690.702327
+mean time for each configuration finding 2.092453375
+History quality was 0.7205835059310864
+#################  iteration 90 #####################
+STD: 0.044626461880816856
+Best score:0.7809999999999999 
+ best score id:2903 
+ Average score[5974,6074]:0.6913300000000001 
+ number of all try: 6074 
+ number of fail try:0
+Best score in [5974,6074]:0.768
+-----------
+total time point finding is 1977.9156750000002
+mean time for each configuration finding 2.1759248349834985
+History quality was 0.7194308670907263
+#################  iteration 100 #####################
+STD: 0.0455415590422638
+Best score:0.7809999999999999 
+ best score id:2870 
+ Average score[6642,6742]:0.6939200000000001 
+ number of all try: 6742 
+ number of fail try:0
+Best score in [6642,6742]:0.7620000000000001
+-----------
+total time point finding is 2187.297002
+mean time for each configuration finding 2.1656405960396037
+History quality was 0.7193494429388738

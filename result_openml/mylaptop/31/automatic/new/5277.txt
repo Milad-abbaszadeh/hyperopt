@@ -1,0 +1,12 @@
+#################  iteration 2257 #####################
+STD: 0.0367827938430796
+Best score:0.78 
+ best score id:4884 
+ Average score[5277,5377]:0.7443809523809524 
+ number of all try: 5377 
+ number of fail try:16
+Best score in [5277,5377]:0.776
+-----------
+total time point finding is 280.698919
+mean time for each configuration finding 2.779197217821782
+History quality was 0.7066901648664013

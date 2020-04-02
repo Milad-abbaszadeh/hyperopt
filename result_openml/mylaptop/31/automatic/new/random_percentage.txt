@@ -1,0 +1,60 @@
+#################  iteration 1328 #####################
+STD: 0.07518807599409773
+Best score:0.779 
+ best score id:1082 
+ Average score[1328,1428]:0.6814431818181818 
+ number of all try: 1428 
+ number of fail try:12
+Best score in [1328,1428]:0.7610000000000001
+-----------
+total time point finding is 129.76988599999999
+mean time for each configuration finding 1.2848503564356435
+History quality was 0.7204540662650601
+#################  iteration 2656 #####################
+STD: 0.046430593362566455
+Best score:0.78 
+ best score id:1923 
+ Average score[2656,2756]:0.6908 
+ number of all try: 2756 
+ number of fail try:0
+Best score in [2656,2756]:0.767
+-----------
+total time point finding is 295.67828800000007
+mean time for each configuration finding 1.4637539009900993
+History quality was 0.719761671686747
+#################  iteration 3985 #####################
+STD: 0.06611216151359747
+Best score:0.7809999999999999 
+ best score id:2975 
+ Average score[3985,4085]:0.6856099999999999 
+ number of all try: 4085 
+ number of fail try:0
+Best score in [3985,4085]:0.772
+-----------
+total time point finding is 481.586025
+mean time for each configuration finding 1.5893928217821782
+History quality was 0.7192138017565872
+#################  iteration 5313 #####################
+STD: 0.038042213395122
+Best score:0.7809999999999999 
+ best score id:3985 
+ Average score[5313,5413]:0.6925 
+ number of all try: 5413 
+ number of fail try:0
+Best score in [5313,5413]:0.767
+-----------
+total time point finding is 695.834981
+mean time for each configuration finding 1.7223638143564355
+History quality was 0.7193239224543573
+#################  iteration 6642 #####################
+STD: 0.037679378975773996
+Best score:0.7809999999999999 
+ best score id:4973 
+ Average score[6642,6742]:0.68938 
+ number of all try: 6742 
+ number of fail try:0
+Best score in [6642,6742]:0.7710000000000001
+-----------
+total time point finding is 928.8383879999999
+mean time for each configuration finding 1.839283936633663
+History quality was 0.7191011743450767

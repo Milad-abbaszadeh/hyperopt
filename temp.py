@@ -10,6 +10,7 @@ import random
 from scipy import stats
 import pandas as pd
 from sklearn.cluster import KMeans
+import random
 
 # def objective(args):
 #     x= args
@@ -138,7 +139,7 @@ def find_n_initial_random(trial, N):
     losses = trial.losses()
     losses = [abs(i) for i in losses]
     losses = np.array(losses)
-
+    random.seed(0)
     selected_points = random.sample(range(len(losses)), N)
 
     new_trial = []
@@ -188,6 +189,7 @@ def trial_utils(trial, start, end):
     print('Best score:{} \n best score id:{} \n Average score[{},{}]:{} \n number of all try: {} \n number of fail try:{}'.format(best_score, best_score_id, start, end,
                                                                                 avg_score,number_all_try,number_failconfig))
     print("Best score in [{},{}]:{}".format(start,end,max_start_end))
+
     print("-----------")
     return avg_score,standard_deviation,max_start_end
 
@@ -575,12 +577,105 @@ def histogram_equal_percentage_base_f1(trial, percentage, n_bin, plot=True):
     return trial_merged
 
 
+def point_base_area_under_roc_curve_classifier(trial,percentage):
+    df2 = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/mylaptop/31/automatic/new/cluster/df2.p", "rb"))
+    selected_index = []
+    for i in range(14):
+        l = df2[(df2["accuracy"]< 0.99) &( df2["DFC"]==i)].sort_values(by ='accuracy')['index'].to_list()
+        if i==12:
+            selected_index = selected_index + l
+        if i == 13:
+            selected_index = selected_index + l
+        if len(l) < 10:
+            selected_index = selected_index + l
+        # else:
+        #     budget = int(len(l) * (percentage/100))
+        #     # sampling = random.choices(l, k=budget)
+        #     # selected_index = list(selected_index) + list(sampling)
+        #     step_size = int(len(l)/budget)
+        #
+        #     for j in range(budget):
+        #         if j==0:
+        #             candidate_index = l[j]
+        #         else:
+        #             candidate_index = l[j*step_size]
+        #         selected_index.append(candidate_index)
+    #make trial
+    trials_made = specialindex_trial_builder(trial,selected_index)
+    return trials_made
 
 
 
+def encoder (df):
+    def encoder_categorical(df1, feature):
+        A = pd.get_dummies(df1[feature])
+        result = pd.concat([df1, A], axis=1)
+        answer = result.drop([feature], axis=1)
+        answer = pd.DataFrame(answer)
+        return answer
+
+    # find categorical columns
+    categorical_columns = []
+    for col in df.columns:
+        if df[col].dtypes not in [int, float]:
+            categorical_columns.append(col)
+            df[col] = df[col].astype('category')
+            df = encoder_categorical(df, col)
+        else:
+            df[col] = df[col].fillna(df[col].mean())
+            df =pd.DataFrame(df)
+    return df
+
+
+def find_best_k(X1, maxk):
+    # find the best K
+    # Run the Kmeans algorithm and get the index of data points clusters
+    print(X1.shape)
+    sse = []
+    centers = {}
+    list_k = list(range(2, maxk))
+    cluster_map1 = pd.DataFrame()
+    cluster_map2 = pd.DataFrame()
+    cluster_map1['data_index'] = range(0, X1.shape[0])
+
+    for k in list_k:
+        km = KMeans(n_clusters=k, random_state=0)
+        km.fit(X1)
+        sse.append(km.inertia_)
+        centers[k] = km.cluster_centers_
+
+        cluster_map1['cluster_{}'.format(k)] = km.labels_
+
+        cluster_map1['Cluster_number'] = km.labels_
+        aa = cluster_map1.groupby('Cluster_number').count()
+        print(aa['cluster_{}'.format(k)])
+
+        print("---------------------------------------")
+
+    # Plot sse against k
+    plt.figure(figsize=(6, 6))
+    plt.plot(list_k, sse, '-o')
+    plt.xlabel(r'Number of clusters *k*')
+    plt.ylabel('Sum of squared distance')
+    plt.grid(True)
+    return sse, centers, cluster_map1
+
+
+def cluter_report(df_31,cluster_map,maxk):
+    for k in range(2,maxk):
+
+        for j in range(k):
+            l = np.where([cluster_map['cluster_{}'.format(k)] == j])[1]
 
 
 
+            print("k={}, cluster={},len={} ".format( k,j,len(l)))
+
+            print("Data preprocessing:{}, Feature preprosser:{}, Classifier:{}".format(set(df_31['data_preprocessing'][l]),set(df_31['feature_preprocessing'][l]),set(df_31['classifier'][l])))
+
+            print('max acc in cluster {} --- Min acc in cluster {}  ---- Mean acc{}'.format(df_31['accuracy'][l].max(),df_31['accuracy'][l].min(),df_31['accuracy'][l].mean()))
+            print('------------------------------------')
+        print("-------------------------------------------------------")
 
 
 
