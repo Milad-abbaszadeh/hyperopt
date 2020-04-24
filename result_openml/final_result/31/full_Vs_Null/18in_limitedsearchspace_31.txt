@@ -1,0 +1,30 @@
+#################  iteration 0 #####################
+STD: 0.02396506624234536
+Best score:0.784 
+ best score id:14 
+ Average score[18,118]:0.71966 
+ number of all try: 118 
+ number of fail try:0
+Best score in [18,118]:0.782
+-----------
+total time point finding is 15.803246
+mean time for each configuration finding 0.15646778217821783
+History quality was 0.7756111111111111
+Max accuracy in the History was 0.784
+##############################################################
+##############################################################
+gamma 2 lf removed
+
+#################  iteration 0 #####################
+STD: 0.028995425395699097
+Best score:0.784 
+ best score id:14 
+ Average score[18,118]:0.7565714285714287 
+ number of all try: 118 
+ number of fail try:2
+Best score in [18,118]:0.782
+-----------
+total time point finding is 16.215645000000006
+mean time for each configuration finding 0.16055094059405947
+History quality was 0.7756111111111111
+Max accuracy in the History was 0.784

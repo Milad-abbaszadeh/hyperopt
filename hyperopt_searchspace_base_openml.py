@@ -243,7 +243,7 @@ class run_hyperopt(object):
             pca_params = params['feature_preprocessing']
             pca = PCA()
             pca.set_params(**pca_params)
-            pca.random_state = 0
+            # pca.random_state = 0
             step.append(('pca', pca))
 
         elif feature_preprocessing_type == 'VarianceThreshold':
@@ -257,7 +257,7 @@ class run_hyperopt(object):
             kernel_pca_param = params['feature_preprocessing']
             kernel_pca = KernelPCA()
             kernel_pca.set_params(**kernel_pca_param)
-            kernel_pca.random_state = 0
+            # kernel_pca.random_state = 0
             step.append(('kernelpca', kernel_pca))
 
         elif feature_preprocessing_type == 'do_noting':
@@ -270,19 +270,19 @@ class run_hyperopt(object):
             rf_params = params['classifier']
             rf = RandomForestClassifier()
             rf.set_params(**rf_params)
-            rf.random_state = 0
+            # rf.random_state = 0
             step.append(('randomforestclassifier', rf))
 
         elif classifier_type == 'decisiontreeclassifier':
             tree_params = params['classifier']
             tree = DecisionTreeClassifier(max_features=1.0, min_impurity_decrease=0.0, min_weight_fraction_leaf=0.0,
-                                          random_state=1001, splitter='best')
+                                           splitter='best') #random_state=1001
             tree.set_params(**tree_params)
             step.append(('decisiontreeclassifier', tree))
 
         elif classifier_type == 'gradientboostingclassifier':
             gbc_params = params['classifier']
-            gbc = GradientBoostingClassifier(random_state=0)
+            gbc = GradientBoostingClassifier() #random_state=0
             gbc.set_params(**gbc_params)
             step.append(('gradientboostingclassifier', gbc))
 
@@ -294,13 +294,13 @@ class run_hyperopt(object):
 
         elif classifier_type == 'fkceigenpro':
             fkce_params = params['classifier']
-            fkce = FKCEigenPro(random_state=10045)
+            fkce = FKCEigenPro() #random_state=10045
             fkce.set_params(**fkce_params)
             step.append(('fkceigenpro', fkce))
 
         elif classifier_type == 'svc':
             svc_params = params['classifier']
-            svc = SVC(cache_size=200, random_state=1)
+            svc = SVC(cache_size=200) #random_state=1
             svc.set_params(**svc_params)
             step.append(('svc', svc))
 
@@ -319,7 +319,7 @@ class run_hyperopt(object):
 
         elif classifier_type == 'mlpclassifier':
             mlp_params = params['classifier']
-            mlp = MLPClassifier(random_state=10431)
+            mlp = MLPClassifier() #random_state=10431
             mlp.set_params(**mlp_params)
             step.append(('mlpclassifier', mlp))
 
@@ -327,7 +327,7 @@ class run_hyperopt(object):
             sgd_params = params['classifier']
             sgd = linear_model.SGDClassifier()
             sgd.set_params(**sgd_params)
-            sgd.random_state = 0
+            # sgd.random_state = 0
             step.append(('sgdclassifier', sgd))
 
         pip = Pipeline(steps=step)
@@ -388,21 +388,22 @@ if __name__ == '__main__':
 
     experiment_history=[]
 
-    # for iteration in list(np.arange(10,110,10)):
-    for iteration in [0]:
+    # for iteration in list(np.arange(1000,7000,1000)):
+    for iteration in [0,1,2]:
 
-        runner = run_hyperopt(dataset_id=31,task_id=31)
+        runner = run_hyperopt(dataset_id=3,task_id=3)
 
         #all history which is available
-        # all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/32/final/trial_32_withrunid1.p", "rb"))
-        all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/final_result/31/kmeans/buildup_trial/250_k=5_allclustersample.p", "rb"))
-        # all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/mylaptop/3/dima/3/10000it_0in_3.p", "rb"))
-        # all_trials = temp.remove_zero_trial(all_trials)
-        # print(len(all_trials.trials))
+        # all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/3/final/trial_3_withrunid1.p", "rb"))
+        # all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/final_result/32/kmeans/buildup_trial/metricfeatures/8020_k=2_allclustersample_f=13_silouet.p", "rb"))
+        # X = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/final_result/125923/X125923_f=67.p", "rb"))
+
+        # df = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/125923/final/df_125923.p", "rb"))
 
         #selection strategies
-        trials = all_trials
-        # trials = Trials()
+        # trials = all_trials
+        trials = Trials()
+        # trials   =  temp.remove_zero_trial(all_trials)
         # trials = temp.point_base_area_under_roc_curve_classifier(all_trials,iteration)
         # trials = temp.histogram_equal_percentage_base_f1(trial=all_trials, percentage=iteration, n_bin=10, plot=False)
         # trials = temp.histogram_equal_percentage_base(trial=all_trials,percentage=iteration,n_bin=5,plot=False)
@@ -410,7 +411,11 @@ if __name__ == '__main__':
         # trials = temp.find_n_initial(trial=all_trials,N=8000,good=22,bad=7978)
         # trials = temp.find_n_initial_random(trial=all_trials,N=iteration)
         # trials =temp.find_n_histogram_points(trial =all_trials,full_budget=650,n_bin = 10,plot=False)
-        # trials = temp.find_n_special_points(all_trials,N=2000,strategy='WORST')
+        # trials = temp.find_n_special_points(all_trials,N=iteration,strategy='BEST')
+        # trials = temp.unique_acc_selector(df,all_trials)
+        # trials = temp.Kmeans_trial_builder(X1=X, k=8, trial=all_trials, method='all_cluster', min_member=65)
+
+
 
         losses_1 = trials.losses()
         losses_1 = [abs(i) for i in losses_1]
@@ -432,12 +437,12 @@ if __name__ == '__main__':
         #capture the time
         time_tracker.append(['0start',datetime.datetime.now()])
 
-        best,trials_inside = fmin(runner.objective, runner.make_search_space(), algo=tpe.suggest, max_evals=100+trial_size, trials=trials,rstate=np.random.RandomState(10))
+        best,trials_inside = fmin(runner.objective, runner.make_search_space(), algo=tpe.suggest, max_evals=100+trial_size, trials=trials) #rstate=np.random.RandomState(10)
         print("Best Accuracy is {}\n {} \n".format(trials_inside.best_trial['result']['loss'],best))
 
 
         orig_stdout = sys.stdout
-        with open('/home/dfki/Desktop/Thesis/hyperopt/result_openml/final_result/31/kmeans/result/250_k=5_allclustersample.txt','a') as f:
+        with open('/home/dfki/Desktop/Thesis/hyperopt/result_openml/final_result/3/full_Vs_Null/0in_withoutseed_new.txt','a') as f:
             sys.stdout = f
             print("#################  iteration {} #####################".format(iteration))
             avg_score,standard_deviation,max_start_end = temp.trial_utils(trials_inside,trial_size,100+trial_size)
@@ -448,6 +453,6 @@ if __name__ == '__main__':
         sys.stdout = orig_stdout
         experiment_history.append([iteration,avg_score,standard_deviation,max_start_end,history_quality])
 
-    # pickle.dump(experiment_history,open('./result_openml/mylaptop/31/automatic/new/cluster/random_percentage.p','wb'))
+    # pickle.dump(experiment_history,open('/home/dfki/Desktop/Thesis/hyperopt/result_openml/final_result/125923/special_point/1000_6000_best_125923.p','wb'))
         # pickle.dump(trials_inside, open('./result_openml/mylaptop/3/100it_0in_trial_gamma1_3_{}.p'.format(iteration), 'wb'))
         # pickle.dump(time_tracker, open('./result_openml/mylaptop/3/100it_0in_timetracker_gamma1_3_{}.p'.format(iteration),'wb'))

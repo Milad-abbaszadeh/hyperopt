@@ -9,7 +9,7 @@ from sklearn.preprocessing import StandardScaler
 def trial_builder_kmeans(all_trials,num_clusters):
     X = temp.vector_builder(all_trials)
     # X = StandardScaler().fit_transform(X)
-
+    # X = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/final_result/32/X32_f=73.p", "rb"))
 
     selected_index = kmeans_point_selector(X,num_clusters)
     trial = temp.specialindex_trial_builder(all_trials,selected_index)
@@ -19,7 +19,7 @@ def trial_builder_kmeans(all_trials,num_clusters):
 
 def kmeans_point_selector(tf_matrix,num_clusters):
 
-    m_km = KMeans(n_clusters=num_clusters,random_state=0)
+    m_km = KMeans(n_clusters=num_clusters)
     m_km.fit(tf_matrix)
     m_clusters = m_km.labels_.tolist()
 

@@ -213,16 +213,17 @@ def time_tracker_plot(times, plot_label, xlabel, ylabel, show_plot=True):
     print("mean time for each configuration finding {}".format(np.array(time_keeper).mean()))
     # print(time_keeper)
     if show_plot:
-        matplotlib.rcParams.update({'font.size': 22})
+        matplotlib.rcParams.update({'font.size': 20})
 
         fig_size = plt.rcParams["figure.figsize"]
-        fig_size[0] = 20
-        fig_size[1] = 8
+        fig_size[0] = 15
+        fig_size[1] = 5
         plt.plot(time_keeper, label='{}'.format(plot_label))
         plt.grid(True)
         plt.xlabel('{}'.format(xlabel))
         plt.ylabel('{}'.format(ylabel))
-        plt.legend(loc=3)
+        plt.legend(loc=1)
+
         plt.show()
 
 
@@ -432,7 +433,7 @@ def selecet_index_base_kmeans(X, k, min_member):
     k: number of k in kmeans
     min_member: number of sample should take out of each cluster
     '''
-    kmeans = KMeans(n_clusters=k, random_state=0).fit(X)
+    kmeans = KMeans(n_clusters=k).fit(X)
 
     cluster_map = pd.DataFrame()
     cluster_map['data_index'] = range(0, X.shape[0])
@@ -604,6 +605,88 @@ def point_base_area_under_roc_curve_classifier(trial,percentage):
     trials_made = specialindex_trial_builder(trial,selected_index)
     return trials_made
 
+def unique_acc_selector(df,trial):
+    """
+    For each dataset only return the index of pipeline that has unique accuracy
+    for same accuracies return the index which has more None in the row (means more easy pipelines)
+    :param df: Dataframe of the dataset
+    :param trial: trial of dataset
+    :return: new trial with unique accuracy
+    """
+    selected = []
+    for acc in set(df['accuracy']):
+        l = np.where(df['accuracy'] == acc)
+        candidate = df.iloc[l].isnull().sum(axis=1).idxmax()
+        selected.append(candidate)
+    print(len(selected))
+    trials_made = specialindex_trial_builder(trial,selected)
+    return trials_made
+
+
+def Kmeans_trial_builder(X1, k, trial, method, min_member):
+    ":return: new trial based on method and kmeans"
+
+    def calculate_SSE_for_each_cluster(X, centers, cluster_map, k):
+        biggest = []
+        for j in range(k):
+            sum_dist = []
+            l = np.where([cluster_map['cluster_{}'.format(k)] == j])[1]
+            for i in l:
+                dist = ((X[i] - centers[k][j]) ** 2).sum()
+                sum_dist.append(dist)
+            print('sse for cluster {}: {}'.format(j, np.array(sum_dist).sum()))
+            biggest.append(np.array(sum_dist).sum())
+        sse = np.array(sum_dist).sum()
+
+        print("k={}, sse={}".format(k, sse))
+        print('Biggest sse is for cluster {}'.format(np.array(biggest).argmax()))
+        print('---------------------------------------------------------')
+        return (np.array(biggest).argmax())
+
+    sse = []
+    centers = {}
+
+    cluster_map1 = pd.DataFrame()
+    cluster_map1['data_index'] = range(0, X1.shape[0])
+
+    km = KMeans(n_clusters=k)
+    km.fit(X1)
+    sse.append(km.inertia_)
+    centers[k] = km.cluster_centers_
+    cluster_map1['cluster_{}'.format(k)] = km.labels_
+
+    cluster_map1['Cluster_number'] = km.labels_
+    aa = cluster_map1.groupby('Cluster_number').count()
+    print(aa['cluster_{}'.format(k)])
+
+    print("---------------------------------------")
+
+    if method == 'biggest_cluster':
+        biggest_cluster = cluster_map1.groupby('Cluster_number').count().idxmax()[0]
+        l = np.where([cluster_map1['cluster_{}'.format(k)] == biggest_cluster])[1]
+    elif method == 'biggest_sse':
+        biggest_sse = calculate_SSE_for_each_cluster(X1, centers, cluster_map1, k)
+        l = np.where([cluster_map1['cluster_{}'.format(k)] == biggest_sse])[1]
+
+    elif method == 'all_cluster':
+        l = selecet_index_base_kmeans(X1, k, min_member)
+
+    t = specialindex_trial_builder(trial, l)
+
+    return t
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def encoder (df):
@@ -653,9 +736,11 @@ def find_best_k(X1, maxk):
         print("---------------------------------------")
 
     # Plot sse against k
+    import pylab as plb
+    plb.rcParams['font.size'] = 16
     plt.figure(figsize=(6, 6))
     plt.plot(list_k, sse, '-o')
-    plt.xlabel(r'Number of clusters *k*')
+    plt.xlabel(r'Number of clusters k')
     plt.ylabel('Sum of squared distance')
     plt.grid(True)
     return sse, centers, cluster_map1
@@ -698,14 +783,17 @@ def ploter(x,y, plot_label, xlabel, ylabel):
 
 
 def expriment_ploter(experiment, title):
+    import pylab as plb
+    plb.rcParams['font.size'] = 16
     fig_size = plt.rcParams["figure.figsize"]
-    fig_size[0] = 20
-    fig_size[1] = 8
+    fig_size[0] = 13
+    fig_size[1] = 5
     x_axis_kmeans = []
     avg_acc_3_kmeans = []
     std_3 = []
     max_found_3 = []
     history_quality = []
+
     for item in experiment:
         x_axis_kmeans.append(item[0])
         avg_acc_3_kmeans.append(item[1])
@@ -714,7 +802,7 @@ def expriment_ploter(experiment, title):
         history_quality.append(item[4])
 
     d3kmeasn = {
-        'History': x_axis_kmeans,
+        'History-Size': x_axis_kmeans,
         'AVG-Accuracy': avg_acc_3_kmeans,
         #     'std':std_3,
         'Best_found': max_found_3,
@@ -726,16 +814,16 @@ def expriment_ploter(experiment, title):
     sns.set(font_scale=1.4, style='whitegrid', )
     sns.set_context("talk", font_scale=1.4, rc={"lines.linewidth": 5, 'lines.markersize': 20})
 
-    sns.lineplot(x='History', y='AVG-Accuracy', style='Approaches', markers=True, dashes=False, hue='Approaches',
-                 data=pd.melt(pd3kmeasn, ['History'], value_name='AVG-Accuracy', var_name='Approaches')).set_title(
+    sns.lineplot(x='History-Size', y='AVG-Accuracy', style='Approaches', legend=False,markers=True, dashes=False, hue='Approaches',
+                 data=pd.melt(pd3kmeasn, ['History-Size'], value_name='AVG-Accuracy', var_name='Approaches')).set_title(
         '{}'.format(title))
-    plt.legend(bbox_to_anchor=(1.03, 1), loc=2, borderaxespad=0.)
+    # plt.legend(bbox_to_anchor=(1.03, 1), loc=2, borderaxespad=0.)
 
 
 def experiment_STD(experiment):
-    fig_size = plt.rcParams["figure.figsize"]
-    fig_size[0] = 20
-    fig_size[1] = 8
+    # fig_size = plt.rcParams["figure.figsize"]
+    # fig_size[0] = 10
+    # fig_size[1] = 3
     x_axis_kmeans = []
     avg_acc_3_kmeans = []
     std_3 = []
@@ -758,18 +846,29 @@ def experiment_STD(experiment):
 
     pd3kmeasn = pd.DataFrame(d3kmeasn)
 
-    g = sns.FacetGrid(pd3kmeasn, height=5, aspect=3)
+    g = sns.FacetGrid(pd3kmeasn, height=5, aspect=3,legend_out=False)
 
     ax = g.map(plt.errorbar, "History", "AVG-Accuracy", "std")
 
     ax.set(xlabel="History", ylabel="Avg-acc")
+    sns.plt.show()
 
+
+# expriment1 = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/final_result/3/special_point/1000_6000_best_3.p", "rb"))
+# expriment_ploter(expriment1,title=" ")
+# # plt.legend(loc='upper left')
+# plt.show()
 
 
 #
 # import pickle
-# trial_3 = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/mylaptop/3/automatic/new/cluster/X_3.p", "rb"))
-# # trial_1035in_histogram5bin = find_n_histogram_points(trial_3, 1035, 5, plot=True)
+# X = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/final_result/32/X32_f=73.p", "rb"))
+# all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/32/final/trial_32_withrunid1.p", "rb"))
+#
+# trial = Kmeans_trial_builder(X, 4, all_trials, method='all_cluster', min_member=15)
+# print(len(trial.trials))
+
+# trial_1035in_histogram5bin = find_n_histogram_points(trial_3, 1035, 5, plot=True)
 #
 # # good_trial = find_n_initial(trial=trial_3,N=4000,good=15,bad=3987)
 # # a= vector_builder(trial_3)

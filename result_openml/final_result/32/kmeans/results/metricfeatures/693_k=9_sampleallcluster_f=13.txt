@@ -1,0 +1,13 @@
+#################  iteration 0 #####################
+STD: 0.2774633122037799
+Best score:0.9962700145560407 
+ best score id:112 
+ Average score[693,793]:0.7097741748697164 
+ number of all try: 793 
+ number of fail try:94
+Best score in [693,793]:0.9926310695673752
+-----------
+total time point finding is 134.432347
+mean time for each configuration finding 1.3310133366336634
+History quality was 0.4169186097132691
+Max accuracy in the History was 0.9962700145560407

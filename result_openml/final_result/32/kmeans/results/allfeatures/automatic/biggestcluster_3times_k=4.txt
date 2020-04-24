@@ -1,0 +1,39 @@
+#################  iteration 0 #####################
+STD: 0.2012924990606945
+Best score:0.996815866084425 
+ best score id:3833 
+ Average score[7707,7807]:0.7862336605362082 
+ number of all try: 7807 
+ number of fail try:64
+Best score in [7707,7807]:0.9934499131441807
+-----------
+total time point finding is 204.650111
+mean time for each configuration finding 2.0262387227722773
+History quality was 0.8664373969863122
+Max accuracy in the History was 0.996815866084425
+#################  iteration 1 #####################
+STD: 0.22512330733398725
+Best score:0.996815866084425 
+ best score id:3833 
+ Average score[7707,7807]:0.7967995234530887 
+ number of all try: 7807 
+ number of fail try:59
+Best score in [7707,7807]:0.9941779303499049
+-----------
+total time point finding is 400.917233
+mean time for each configuration finding 1.9847387772277227
+History quality was 0.8664373969863122
+Max accuracy in the History was 0.996815866084425
+#################  iteration 2 #####################
+STD: 0.24653246581191354
+Best score:0.996815866084425 
+ best score id:3833 
+ Average score[7707,7807]:0.7592158227381157 
+ number of all try: 7807 
+ number of fail try:63
+Best score in [7707,7807]:0.9935408222350898
+-----------
+total time point finding is 587.394804
+mean time for each configuration finding 1.938596712871287
+History quality was 0.8664373969863122
+Max accuracy in the History was 0.996815866084425
