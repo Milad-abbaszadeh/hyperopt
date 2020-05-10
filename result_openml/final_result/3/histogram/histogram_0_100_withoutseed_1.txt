@@ -1,0 +1,78 @@
+#################  iteration 0 #####################
+STD: 0.1498529783075438
+Best score:0.9949931426332288 
+ best score id:87 
+ Average score[0,100]:0.8572592669869314 
+ number of all try: 100 
+ number of fail try:23
+Best score in [0,100]:0.9949931426332288
+-----------
+total time point finding is 131.557369
+mean time for each configuration finding 1.302548207920792
+History quality was nan
+Max accuracy in the History was 0
+#################  iteration 20 #####################
+STD: 0.16285269044506978
+Best score:0.9978097622027535 
+ best score id:2085 
+ Average score[3928,4028]:0.8053006628787879 
+ number of all try: 4028 
+ number of fail try:28
+Best score in [3928,4028]:0.976837774294671
+-----------
+total time point finding is 287.16974899999997
+mean time for each configuration finding 1.421632420792079
+History quality was 0.8963343247959517
+Max accuracy in the History was 0.9978097622027535
+#################  iteration 40 #####################
+STD: 0.16723798534559375
+Best score:0.9978097622027535 
+ best score id:4900 
+ Average score[7862,7962]:0.7981833986415884 
+ number of all try: 7962 
+ number of fail try:25
+Best score in [7862,7962]:0.9724637539184954
+-----------
+total time point finding is 456.139805
+mean time for each configuration finding 1.505411897689769
+History quality was 0.9192257191189764
+Max accuracy in the History was 0.9978097622027535
+#################  iteration 60 #####################
+STD: 0.09515053039313671
+Best score:0.9978097622027535 
+ best score id:5382 
+ Average score[11795,11895]:0.9000979916249474 
+ number of all try: 11895 
+ number of fail try:33
+Best score in [11795,11895]:0.9599529780564262
+-----------
+total time point finding is 659.12618
+mean time for each configuration finding 1.6315004455445543
+History quality was 0.9004707900108285
+Max accuracy in the History was 0.9978097622027535
+#################  iteration 80 #####################
+STD: 0.11758517979444033
+Best score:0.9978097622027535 
+ best score id:5864 
+ Average score[15729,15829]:0.8656241221552741 
+ number of all try: 15829 
+ number of fail try:23
+Best score in [15729,15829]:0.9615086206896551
+-----------
+total time point finding is 894.800144
+mean time for each configuration finding 1.771881473267327
+History quality was 0.9019331955083087
+Max accuracy in the History was 0.9978097622027535
+#################  iteration 100 #####################
+STD: 0.14472484975336658
+Best score:0.9978097622027535 
+ best score id:4650 
+ Average score[19666,19766]:0.8478694814524556 
+ number of all try: 19766 
+ number of fail try:28
+Best score in [19666,19766]:0.9924902037617555
+-----------
+total time point finding is 1188.5500539999998
+mean time for each configuration finding 1.961303719471947
+History quality was 0.9057023569085583
+Max accuracy in the History was 0.9978097622027535

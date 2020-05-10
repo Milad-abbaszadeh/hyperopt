@@ -388,13 +388,13 @@ if __name__ == '__main__':
 
     experiment_history=[]
 
-    # for iteration in list(np.arange(1000,7000,1000)):
-    for iteration in [0,1,2]:
+    for iteration in list(np.arange(20,100,20)):
+    # for iteration in [0,1,2]:
 
-        runner = run_hyperopt(dataset_id=3,task_id=3)
+        runner = run_hyperopt(dataset_id=32,task_id=32)
 
         #all history which is available
-        # all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/3/final/trial_3_withrunid1.p", "rb"))
+        all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/32/final/trial_32_withrunid1.p", "rb"))
         # all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/final_result/32/kmeans/buildup_trial/metricfeatures/8020_k=2_allclustersample_f=13_silouet.p", "rb"))
         # X = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/final_result/125923/X125923_f=67.p", "rb"))
 
@@ -402,11 +402,11 @@ if __name__ == '__main__':
 
         #selection strategies
         # trials = all_trials
-        trials = Trials()
+        # trials = Trials()
         # trials   =  temp.remove_zero_trial(all_trials)
         # trials = temp.point_base_area_under_roc_curve_classifier(all_trials,iteration)
         # trials = temp.histogram_equal_percentage_base_f1(trial=all_trials, percentage=iteration, n_bin=10, plot=False)
-        # trials = temp.histogram_equal_percentage_base(trial=all_trials,percentage=iteration,n_bin=5,plot=False)
+        trials = temp.histogram_equal_percentage_base(trial=all_trials,percentage=iteration,n_bin=5,plot=False)
         # trials = vector.trial_builder_kmeans(all_trials,num_clusters=iteration)
         # trials = temp.find_n_initial(trial=all_trials,N=8000,good=22,bad=7978)
         # trials = temp.find_n_initial_random(trial=all_trials,N=iteration)
@@ -442,7 +442,7 @@ if __name__ == '__main__':
 
 
         orig_stdout = sys.stdout
-        with open('/home/dfki/Desktop/Thesis/hyperopt/result_openml/final_result/3/full_Vs_Null/0in_withoutseed_new.txt','a') as f:
+        with open('/home/dfki/Desktop/Thesis/hyperopt/result_openml/final_result/32/histogram/20_80_32_2.txt','a') as f:
             sys.stdout = f
             print("#################  iteration {} #####################".format(iteration))
             avg_score,standard_deviation,max_start_end = temp.trial_utils(trials_inside,trial_size,100+trial_size)
@@ -453,6 +453,6 @@ if __name__ == '__main__':
         sys.stdout = orig_stdout
         experiment_history.append([iteration,avg_score,standard_deviation,max_start_end,history_quality])
 
-    # pickle.dump(experiment_history,open('/home/dfki/Desktop/Thesis/hyperopt/result_openml/final_result/125923/special_point/1000_6000_best_125923.p','wb'))
+    # pickle.dump(experiment_history,open('/home/dfki/Desktop/Thesis/hyperopt/result_openml/final_result/125923/special_point/pic_files/Ex_1000_6000_BEST_125923_3.p','wb'))
         # pickle.dump(trials_inside, open('./result_openml/mylaptop/3/100it_0in_trial_gamma1_3_{}.p'.format(iteration), 'wb'))
         # pickle.dump(time_tracker, open('./result_openml/mylaptop/3/100it_0in_timetracker_gamma1_3_{}.p'.format(iteration),'wb'))

@@ -344,7 +344,7 @@ def remove_zero_trial(trial):
     losses = trial.losses()
     losses = [abs(i) for i in losses]
     losses = np.array(losses)
-    fail_config_index = np.where(losses <=0.5)[0] # 0.47778473091364204
+    fail_config_index = np.where(losses <= 0.5)[0] # 0.47778473091364204
     number_failconfig = len(fail_config_index)
     print('Number of fail_point is {}'.format(number_failconfig))
 
@@ -467,13 +467,21 @@ def histogram_equal_percentage_base(trial, percentage, n_bin, plot=True):
     losses_index = np.argsort(losses)
 
     selected_index = []
+    print('Percentage is {}'.format(percentage))
 
     def select_points(binmember):
         if len(binmember) == 0:
             return len(binmember)
 
+
         binmember = np.array(binmember)
         required_number = int((percentage / 100) * len(binmember))
+
+        if required_number >= len(binmember):
+            for i,xx in enumerate(binmember):
+                selected_index.append(i)
+            return len(binmember)
+
 
         list_diff = []
         for i, x in enumerate(binmember):
@@ -481,8 +489,8 @@ def histogram_equal_percentage_base(trial, percentage, n_bin, plot=True):
 
         list_diff = np.array(list_diff)
         indexes = np.argpartition(list_diff, required_number)[:required_number]
-        print("{} selected from this bin".format(len(indexes)))
 
+        print("{} selected from this bin".format(len(indexes)))
         for xx in indexes:
             selected_index.append(xx)
         return len(binmember)
@@ -490,6 +498,7 @@ def histogram_equal_percentage_base(trial, percentage, n_bin, plot=True):
     out = stats.binned_statistic(losses, statistic=select_points, bins=n_bin, values=losses)
 
     print("Number of Selected points is {}".format(len(selected_index)))
+    print("------------------------------------------------------")
     if plot:
         plt.hist(losses, bins=n_bin)
         plt.xlabel('Accuracy')
@@ -499,7 +508,7 @@ def histogram_equal_percentage_base(trial, percentage, n_bin, plot=True):
 
     # build the new trial
     new_trial = []
-    for i in selected_index:
+    for i in list(selected_index):
         new_trial.append(trial.trials[i])
 
     empty_trial = Trials()
@@ -534,6 +543,11 @@ def histogram_equal_percentage_base_f1(trial, percentage, n_bin, plot=True):
 
         binmember = np.array(binmember)
         required_number = int((percentage / 100) * len(binmember))
+
+        if required_number >= len(binmember):
+            for i,xx in enumerate(binmember):
+                selected_index.append(i)
+            return len(binmember)
 
         list_diff = []
         for i, x in enumerate(binmember):
@@ -804,7 +818,7 @@ def expriment_ploter(experiment, title):
     d3kmeasn = {
         'History-Size': x_axis_kmeans,
         'AVG-Accuracy': avg_acc_3_kmeans,
-        #     'std':std_3,
+            'std':std_3,
         'Best_found': max_found_3,
         'History_quality': history_quality
     }
@@ -821,9 +835,14 @@ def expriment_ploter(experiment, title):
 
 
 def experiment_STD(experiment):
-    # fig_size = plt.rcParams["figure.figsize"]
-    # fig_size[0] = 10
-    # fig_size[1] = 3
+    import pylab as plb
+    plb.rcParams['font.size'] = 16
+    fig_size = plt.rcParams["figure.figsize"]
+    fig_size[0] = 13
+    fig_size[1] = 5
+    sns.set(font_scale=1.4, style='whitegrid', )
+    sns.set_context("talk", font_scale=1.4, rc={"lines.linewidth": 5, 'lines.markersize': 20})
+
     x_axis_kmeans = []
     avg_acc_3_kmeans = []
     std_3 = []
@@ -840,28 +859,31 @@ def experiment_STD(experiment):
         'History': x_axis_kmeans,
         'AVG-Accuracy': avg_acc_3_kmeans,
         'std': std_3,
-        #         'Best_found':max_found_3,
-        #         'History_quality':history_quality
+        'Best_found':max_found_3,
+        'History_quality':history_quality
     }
 
     pd3kmeasn = pd.DataFrame(d3kmeasn)
 
-    g = sns.FacetGrid(pd3kmeasn, height=5, aspect=3,legend_out=False)
+    g = sns.FacetGrid(pd3kmeasn, height=5, aspect=3,legend_out=True)
+    # g.set(ylim=(0.8,1))
+    ax = g.map(plt.errorbar, "History", "AVG-Accuracy", "std",'Best_found')
 
-    ax = g.map(plt.errorbar, "History", "AVG-Accuracy", "std")
+    ax.set(xlabel="Percentage of bins (%)", ylabel="AVG-Accuracy")
 
-    ax.set(xlabel="History", ylabel="Avg-acc")
-    sns.plt.show()
+    plt.show()
 
-
-# expriment1 = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/final_result/3/special_point/1000_6000_best_3.p", "rb"))
-# expriment_ploter(expriment1,title=" ")
-# # plt.legend(loc='upper left')
-# plt.show()
 
 
 #
 # import pickle
+# all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/31/final/trial_31_withrunid1.p", "rb"))
+# for iteration in list(np.arange(0, 120, 20)):
+#     a=histogram_equal_percentage_base(all_trials,iteration,5,False)
+#
+#
+
+
 # X = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/final_result/32/X32_f=73.p", "rb"))
 # all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/32/final/trial_32_withrunid1.p", "rb"))
 #
