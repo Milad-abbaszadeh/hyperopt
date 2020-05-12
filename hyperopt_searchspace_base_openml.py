@@ -391,10 +391,10 @@ if __name__ == '__main__':
     for iteration in list(np.arange(20,100,20)):
     # for iteration in [0,1,2]:
 
-        runner = run_hyperopt(dataset_id=32,task_id=32)
+        runner = run_hyperopt(dataset_id=3,task_id=3)
 
         #all history which is available
-        all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/32/final/trial_32_withrunid1.p", "rb"))
+        all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/openml_test/pickel_files/3/final/trial_3_withrunid1.p", "rb"))
         # all_trials = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/final_result/32/kmeans/buildup_trial/metricfeatures/8020_k=2_allclustersample_f=13_silouet.p", "rb"))
         # X = pickle.load(open("/home/dfki/Desktop/Thesis/hyperopt/result_openml/final_result/125923/X125923_f=67.p", "rb"))
 
@@ -442,7 +442,7 @@ if __name__ == '__main__':
 
 
         orig_stdout = sys.stdout
-        with open('/home/dfki/Desktop/Thesis/hyperopt/result_openml/final_result/32/histogram/20_80_32_2.txt','a') as f:
+        with open('/home/dfki/Desktop/Thesis/hyperopt/result_openml/final_result/3/histogram/20_80_3_3.txt','a') as f:
             sys.stdout = f
             print("#################  iteration {} #####################".format(iteration))
             avg_score,standard_deviation,max_start_end = temp.trial_utils(trials_inside,trial_size,100+trial_size)
